@@ -1,5 +1,6 @@
 # FLASK 
 waitress
 flask 
+requests
 # for auto-restarting
 watchdog 

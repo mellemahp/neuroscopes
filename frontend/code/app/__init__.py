@@ -1,7 +1,12 @@
-""" SOME STUFF 
+"""/app/__init__.py [Frontend]
+
+Description: App factory method for frontend
+Project: Fauxstrology
+Author: Hunter Mellema
+Date: 12/7/2019
 
 """
-# start import # 
+#=== Start imports ===# 
 
 # std lib 
 import logging
@@ -9,26 +14,32 @@ import logging
 # third party
 from flask import Flask 
 
-
 # local 
-from config import config
+from .routes import landing_page, display_page
 
-# end imports #
+#=== End imports ===# 
 
-def new_app(config_selector): 
+# Define Routes 
+ROUTE_TABLE = {
+    '/': {"fxn": landing_page, "methods": ["GET", "POST"] },
+    '/horoscope': {"fxn": display_page, "methods": ["GET"] }
+}
+
+
+class Config(): 
+    VARIABLE=1
+
+
+def new_app(): 
     """ Creates a new flask app instance 
-
-    :param config_selector: version of application to deploy ('dev', 'test', etc)
-    :type config_selector: str
-
     """
     app = Flask(__name__) 
 
     # add configuration parameters to application
-    app.config.from_object(config[config_selector])
+    app.config.from_object(Config())
 
-    # add any blueprints 
-    from .example import example as example_blueprint
-    app.register_blueprint(example_blueprint)
+    # Construct Routes
+    for url in ROUTE_TABLE:
+        app.add_url_rule(url, methods=ROUTE_TABLE[url]["methods"], view_func=ROUTE_TABLE[url]["fxn"])
 
-    # other setup 
+    return app

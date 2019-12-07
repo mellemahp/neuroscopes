@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1> Feauxstrology </h1>
+<h2> Your source for the highest quality fortunes and horoscopes </h2>
+<form action="/" method="POST">
+    Birthday:
+    <input type="date" name="bday">
+    <input type="submit">
+</form>  
+{% endblock %}

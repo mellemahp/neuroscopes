@@ -1,7 +1,12 @@
-"""SOME INFO 
+"""/frontend.py [Frontend]
+
+Description: Entrypoint for frontend service
+Project: Fauxstrology
+Author: Hunter Mellema
+Date: 12/7/2019
 
 """
-# start import # 
+#=== Start imports ===# 
 
 # third party
 from waitress import serve
@@ -9,9 +14,9 @@ from waitress import serve
 # local 
 from app import new_app
 
-# end imports #
+#=== End imports ===# 
+
 
 if __name__ == "__main__":
-    # TODO: change this to have multiple modes for a real deployment
-    app = new_app('default')
-    serve(app, host="0.0.0.0", port=5555)
+    app = new_app()
+    serve(app, host="0.0.0.0", port=5000)
