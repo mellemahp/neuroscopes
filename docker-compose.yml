@@ -1,0 +1,67 @@
+version: '3.7'
+
+services: 
+  nginx: 
+    image: nginx:1.16-alpine
+    ports: 
+      - 5050:80
+    volumes: 
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+    networks: 
+      - frontend_network
+      - backend_network
+    restart: always
+
+  frontEnd: 
+    build: ./frontend
+    env_file: 
+      - ./frontend/frontend.env
+    volumes: 
+      - type: bind
+        source: ./frontend/code
+        target: /frontend/code
+    expose: 
+      - 5000
+    networks: 
+      - backend_network
+    container_name: frontend
+    entrypoint: npm run dev_server
+
+  pictureGen: 
+    build: ./pictureGen
+    env_file: 
+      - ./pictureGen/pictureGen.env
+    volumes: 
+      - type: bind
+        source: ./pictureGen/code
+        target: /pictureGen/code
+    expose: 
+      - 5000
+    networks: 
+      - backend_network
+    container_name: pictureGen
+    entrypoint: > 
+      watchmedo auto-restart --recursive --directory='/app/' python3 /app/pictureGen.py
+
+  horoscopeGen: 
+    build: ./horoscopeGen
+    env_file: 
+      - ./horoscopeGen/horoscopeGen.env
+    volumes: 
+      - type: bind
+        source: ./pictureGen/code
+        target: /pictureGen/code
+    expose: 
+      - 5000 
+    networks: 
+      - backend_network
+    container_name: horoscopeGen
+    entrypoint: > 
+      watchmedo auto-restart --recursive --directory='/app/' python3 /app/horoscopeGen.py
+
+networks:
+  frontend_network:
+  backend_network:

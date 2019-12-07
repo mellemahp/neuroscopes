@@ -1,0 +1,5 @@
+# FLASK 
+waitress
+flask 
+# for auto-restarting
+watchdog 
