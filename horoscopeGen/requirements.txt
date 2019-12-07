@@ -3,3 +3,8 @@ waitress
 flask 
 # for auto-restarting
 watchdog 
+# redis for caching
+redis
+# for larnin'
+tensorflow
+textgenrnn

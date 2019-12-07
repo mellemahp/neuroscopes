@@ -15,7 +15,7 @@ services:
       - backend_network
     restart: always
 
-  frontEnd: 
+  front_end: 
     build: ./frontend
     env_file: 
       - ./frontend/frontend.env
@@ -30,7 +30,7 @@ services:
     container_name: frontend
     entrypoint: npm run dev_server
 
-  pictureGen: 
+  picture_gen: 
     build: ./pictureGen
     env_file: 
       - ./pictureGen/pictureGen.env
@@ -42,26 +42,44 @@ services:
       - 5000
     networks: 
       - backend_network
+      - cache_network
     container_name: pictureGen
     entrypoint: > 
       watchmedo auto-restart --recursive --directory='/app/' python3 /app/pictureGen.py
 
-  horoscopeGen: 
+  horoscope_gen: 
     build: ./horoscopeGen
     env_file: 
       - ./horoscopeGen/horoscopeGen.env
     volumes: 
       - type: bind
-        source: ./pictureGen/code
-        target: /pictureGen/code
+        source: ./horoscopeGen/code
+        target: /app/
     expose: 
-      - 5000 
+      - 5000
+    ports: 
+      - 5050:5000
     networks: 
       - backend_network
+      - cache_network
     container_name: horoscopeGen
     entrypoint: > 
-      watchmedo auto-restart --recursive --directory='/app/' python3 /app/horoscopeGen.py
+      watchmedo auto-restart --recursive --directory='/app/' python3 horoscopeGen.py
+
+  redis_cache: 
+    image: redis:5-alpine
+    expose: 
+      - 6379
+    volumes: 
+      - type: bind 
+        source: /tmp/redis
+        target: /data
+    container_name: redis
+    networks:
+      - cache_network
+  
 
 networks:
   frontend_network:
   backend_network:
+  cache_network:
