@@ -9,7 +9,7 @@ from PIL import Image
 from io import BytesIO
 
 #right ascension and declinaiton (degrees)
-ra = 123.45
+ra = 122.45
 dec = 21.3
 #angular distance image will span in horizontal (width) and vertical (height)
 #directions

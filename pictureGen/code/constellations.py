@@ -13,8 +13,7 @@ img = cv2.imread('sdss.jpg')
 numStars = 10
 
 # Determine the center point
-centerPoint = (np.random.randint(1,img.shape[0]-1),
-               np.random.randint(1,img.shape[1]-1))
+centerPoint = (img.shape[0]/2, img.shape[1]/2)
 
 # Convert the image to grayscale, then blur and threshold
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -49,7 +48,7 @@ print(stars)
 # Connect the dots
 cv2.fillPoly(img, np.array([stars]), (255,0,0))
 
-cv2.imshow('image', img); cv2.waitKey(0); # cv2.destroyAllWindows()
+cv2.imshow('image', img); cv2.waitKey(1); # cv2.destroyAllWindows()
 cv2.imwrite('test.jpg', img)
 
 executionPath = os.getcwd()
@@ -59,7 +58,7 @@ prediction.setModelTypeAsSqueezeNet()
 prediction.setModelPath(os.path.join(executionPath,
     "squeezenet_weights_tf_dim_ordering_tf_kernels.h5"))
 prediction.loadModel()
-predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"test.jpg"), result_count=5)
+predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"test.jpg"), result_count=10)
 
 for eachPrediction, eachProbability in zip(predictions, probabilities):
     print(eachPrediction , " : " , eachProbability)
