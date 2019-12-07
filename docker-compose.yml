@@ -9,8 +9,6 @@ services:
       - type: bind
         source: ./frontend/code
         target: /frontend/code
-    ports: 
-      - 5050:5000
     networks: 
       - backend_network
     container_name: frontend
@@ -24,8 +22,8 @@ services:
       - type: bind
         source: ./pictureGen/code
         target: /pictureGen/code
-    expose: 
-      - 5000
+    ports: 
+      - 5050:5000
     networks: 
       - backend_network
       - cache_network
