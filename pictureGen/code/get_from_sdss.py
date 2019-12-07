@@ -10,7 +10,7 @@ from io import BytesIO
 
 #right ascension and declinaiton (degrees)
 ra = 123.45
-dec = -0.454379056007667
+dec = 21.3
 #angular distance image will span in horizontal (width) and vertical (height)
 #directions
 width_deg = 0.25

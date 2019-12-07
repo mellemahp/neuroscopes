@@ -1,10 +1,11 @@
-from imageai.Detection import ObjectDetection
+from imageai.Prediction import ImagePrediction
 
 import numpy as np
 
 import cv2
 import imutils
 import os
+import time
 
 img = cv2.imread('sdss.jpg')
 
@@ -48,18 +49,19 @@ print(stars)
 # Connect the dots
 cv2.fillPoly(img, np.array([stars]), (255,0,0))
 
-cv2.imshow('image', img); cv2.waitKey(0); cv2.destroyAllWindows()
+cv2.imshow('image', img); cv2.waitKey(0); # cv2.destroyAllWindows()
 cv2.imwrite('test.jpg', img)
 
-# executionPath = os.getcwd()
+executionPath = os.getcwd()
 
-# detector = ObjectDetection()
-# detector.setModelTypeAsRetinaNet()
-# detector.setModelPath(os.join(executionPath, "resnet50_coco_best_v2.0.1.h5"))
-# detector.loadModel()
-# detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path,"test.jpg"),
-                                             # output_image_path=os.path.join(execution_path , "tested.jpg"), 
-                                             # minimum_percentage_probability=1)
-# for eachObject in detections:
-    # print(eachObject["name"] , " : ", eachObject["percentage_probability"], " : ", eachObject["box_points"] )
-    # print("--------------------------------")
+prediction = ImagePrediction()
+prediction.setModelTypeAsSqueezeNet()
+prediction.setModelPath(os.path.join(executionPath,
+    "squeezenet_weights_tf_dim_ordering_tf_kernels.h5"))
+prediction.loadModel()
+predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"test.jpg"), result_count=5)
+
+for eachPrediction, eachProbability in zip(predictions, probabilities):
+    print(eachPrediction , " : " , eachProbability)
+
+time.sleep(10)
