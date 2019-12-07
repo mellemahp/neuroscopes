@@ -1,6 +1,10 @@
-import cv2
+from imageai.Detection import ObjectDetection
+
 import numpy as np
+
+import cv2
 import imutils
+import os
 
 img = cv2.imread('sdss.jpg')
 
@@ -13,8 +17,8 @@ centerPoint = (np.random.randint(1,img.shape[0]-1),
 
 # Convert the image to grayscale, then blur and threshold
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (9,9), 0)
-thresh = cv2.threshold(blurred, 100, 255, cv2.THRESH_BINARY)[1]
+blurred = cv2.GaussianBlur(gray, (5,5), 0)
+thresh = cv2.threshold(blurred, 50, 255, cv2.THRESH_BINARY)[1]
 
 # Find the contours in the thresholded image and pick out the brightest
 conts = cv2.findContours(thresh.copy(), 
@@ -45,3 +49,17 @@ print(stars)
 cv2.fillPoly(img, np.array([stars]), (255,0,0))
 
 cv2.imshow('image', img); cv2.waitKey(0); cv2.destroyAllWindows()
+cv2.imwrite('test.jpg', img)
+
+# executionPath = os.getcwd()
+
+# detector = ObjectDetection()
+# detector.setModelTypeAsRetinaNet()
+# detector.setModelPath(os.join(executionPath, "resnet50_coco_best_v2.0.1.h5"))
+# detector.loadModel()
+# detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path,"test.jpg"),
+                                             # output_image_path=os.path.join(execution_path , "tested.jpg"), 
+                                             # minimum_percentage_probability=1)
+# for eachObject in detections:
+    # print(eachObject["name"] , " : ", eachObject["percentage_probability"], " : ", eachObject["box_points"] )
+    # print("--------------------------------")
