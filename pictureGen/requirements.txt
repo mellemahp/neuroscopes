@@ -3,3 +3,7 @@ waitress
 flask 
 # for auto-restarting
 watchdog 
+
+# for larnin'
+tensorflow
+textgenrnn
