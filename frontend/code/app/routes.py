@@ -51,15 +51,17 @@ def display_page():
         if VAL_REG.match(bd) is None: 
             return "Invalid birthday format", 400
         
-        res = requests.get('http://horoscopeGen:5000/', params={"bd":bd })
-        hs_data = res.json()['data']
+        hs_res = requests.get('http://horoscopeGen:5000/', params={"bd":bd })
+        cons_res = requests.get('http://pictureGen:5000/', params={"bd":bd })
+        hs_data = hs_res.json()['data']
+        cons_data = cons_res.json()['data']
 
         return render_template("display.html", 
             hs=hs_data['horoscope'], 
             ln=hs_data['lucky_numbers'], 
             image_url="https://cdn.britannica.com/04/186504-138-B79316BA/some-constellations-Orion-Cassiopeia-Big-Dipper.jpg",
-            coords=[1,2], 
-            constellation="Orion"
+            coords=[cons_data['ra'],cons_data['dec']], 
+            constellation=cons_data['prediction1']
             )
 
     except Exception as e:

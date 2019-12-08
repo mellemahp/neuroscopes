@@ -11,6 +11,7 @@ Date: 12/7/2019
 # third party
 from flask import current_app, jsonify, request
 from textgenrnn import textgenrnn
+import requests
 from imageai.Prediction import ImagePrediction
 import numpy as np
 import cv2
@@ -30,16 +31,24 @@ from random import randint
 
 l = logging.getLogger(__name__)
 
+def scrub_bytes(prediction):
+    if type(prediction) is bytes:
+        prediction = prediction.decode('utf-8')
+    return prediction
+
 def constellation():
     try:
+        executionPath = os.getcwd()
+
         bd = request.args.get("bd")
+
+        #right ascension and declinaiton come from the birthday
+        dayOfYear = datetime.datetime.strptime(bd, "%m-%d-%Y").timetuple().tm_yday
+        ra = dayOfYear/365*360
+        dec = (dayOfYear/365*180)-90
+
         rkey = "const_" + bd
         if not current_app.config["REDIS_DB"].exists(rkey):
-            dayOfYear = datetime.strptime(bd, "%D-%M-%Y").timetuple().tm_yday
-
-            #right ascension and declinaiton come from the birthday
-            ra = dayOfYear/365*360
-            dec = (dayOfYear/365*180)-90
 
             #angular distance image will span in horizontal (width) and vertical (height)
             #directions
@@ -59,7 +68,7 @@ def constellation():
             "&width=" + str(width) + "&height=" + str(height)
             r = requests.get(url = url)
             pil_img = Image.open(BytesIO(r.content))
-            img = np.array(pil_image) 
+            img = np.array(pil_img) 
             img = img[:, :, ::-1].copy() 
 
             # Number of stars to find
@@ -100,35 +109,51 @@ def constellation():
             # Connect the dots
             cv2.fillPoly(img, np.array([stars]), (255,0,0))
 
-            cv2.imwrite('prediction_image.jpg', img)
-
-            executionPath = os.getcwd()
+            cv2.imwrite(os.path.join(executionPath,'prediction_image.jpg'), img)
 
             prediction = ImagePrediction()
             prediction.setModelTypeAsSqueezeNet()
             prediction.setModelPath(os.path.join(executionPath,
                 "squeezenet_weights_tf_dim_ordering_tf_kernels.h5"))
-            prediction.loadModel()
-            predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"prediction_image.jpg"), result_count=10)
+            prediction.loadModel("fastest")
+            predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"prediction_image.jpg"), result_count=5)
+            predictions = list(map(scrub_bytes, predictions))
 
             imagePath = ""
-            predictionList = predictions
             current_app.config["REDIS_DB"].hset(rkey, "imagePath", imagePath)
-            current_app.config["REDIS_DB"].hset(rkey, "predictionList", predictionList)
+            current_app.config["REDIS_DB"].hset(rkey, "prediction1",predictions[0])
+            current_app.config["REDIS_DB"].hset(rkey, "prediction2",predictions[1])
+            current_app.config["REDIS_DB"].hset(rkey, "prediction3",predictions[2])
+            current_app.config["REDIS_DB"].hset(rkey, "prediction4",predictions[3])
+            current_app.config["REDIS_DB"].hset(rkey, "prediction5",predictions[4])
         else: 
             imagePath = current_app.config["REDIS_DB"].hget(rkey, "imagePath").decode('utf-8')
-            predictionList = current_app.config["REDIS_DB"].hget(rkey,"predictionList")
+            predictions = [
+                    current_app.config["REDIS_DB"].hget(rkey, "prediction1"),
+                    current_app.config["REDIS_DB"].hget(rkey, "prediction2"),
+                    current_app.config["REDIS_DB"].hget(rkey, "prediction3"),
+                    current_app.config["REDIS_DB"].hget(rkey, "prediction4"),
+                    current_app.config["REDIS_DB"].hget(rkey, "prediction5")]
 
+        print(predictions[0])
+        print(type(predictions[0]))
+        print(type("digital_clock"))
         data = {
             "metadata": { 
                 "gen_at": time.strftime("%d %m, %H:%M:%S"),
                 "input_bd": bd
             }, 
+            "ra": ra,
+            "dec": dec,
             "image_path": imagePath, 
-            "predictionList": predictionList
+            "prediction1": scrub_bytes(predictions[0]),
+            "prediction2": scrub_bytes(predictions[1]),
+            "prediction3": scrub_bytes(predictions[2]),
+            "prediction4": scrub_bytes(predictions[3]),
+            "prediction5": scrub_bytes(predictions[4])
         }
 
-        l.info("successfully generated horoscope")
+        l.info("successfully generated constellation")
 
         return jsonify(data=data), 200
     except Exception as e: 
@@ -136,5 +161,4 @@ def constellation():
 
         return jsonify(error=["Could not find your future in the stars"]), 500
         
-
 

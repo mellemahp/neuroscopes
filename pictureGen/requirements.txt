@@ -13,4 +13,5 @@ imageai
 opencv-python
 pillow
 imutils
+requests
 
