@@ -22,7 +22,7 @@ from .routes import landing_page, display_page
 # Define Routes 
 ROUTE_TABLE = {
     '/': {"fxn": landing_page, "methods": ["GET", "POST"] },
-    '/horoscope': {"fxn": display_page, "methods": ["GET"] }
+    '/horoscope/': {"fxn": display_page, "methods": ["GET"] }
 }
 
 
