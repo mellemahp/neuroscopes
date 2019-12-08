@@ -1,9 +1,16 @@
 # FLASK 
 waitress
 flask 
+redis
+
 # for auto-restarting
 watchdog 
 
 # for larnin'
 tensorflow
 textgenrnn
+imageai
+opencv-python
+pillow
+imutils
+
