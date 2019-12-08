@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<center>
+    <img src="{{ image_url }}" width="500" height="auto" />
+    <h2> Your constellation </h2> 
+    <p> {{ constellation }} </p>
+    <h2> </h2>
+    <p> RA: {{ coords[0] }}   DEC: {{ coords[1] }} </p>
+    <h2> Your Future </h2>
+    <p> {{ hs }} </p>
+    <h2> Your Lucky Numbers </h2>
+    <p> {% for i in ln %} <span> {{ i }} </span> {% endfor %} </p> 
+</center> 
+
+{% endblock %}

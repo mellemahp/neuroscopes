@@ -8,11 +8,14 @@ services:
     volumes: 
       - type: bind
         source: ./frontend/code
-        target: /frontend/code
+        target: /app/
+    ports: 
+      - 5050:5000
     networks: 
       - backend_network
     container_name: frontend
-    entrypoint: npm run dev_server
+    entrypoint: > 
+      watchmedo auto-restart --recursive --directory='/app/' python3 frontend.py
 
   picture_gen: 
     build: ./pictureGen
