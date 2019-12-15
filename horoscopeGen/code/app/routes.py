@@ -40,7 +40,7 @@ def horoscope():
         if not current_app.config["REDIS_DB"].exists(rkey):
             fortune_net = textgenrnn('app/fortunes_clean_dedupe.hdf5')
             fortune_list = fortune_net.generate(
-                3, return_as_list=True, temperature=.6
+                6, return_as_list=True, temperature=.6
             ) 
             fortune = ''.join([i + ' ' for i in fortune_list])  
             lucky_numbers = ''.join(["{}".format(randint(0, 9)) for n in range(6)])

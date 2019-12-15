@@ -10,10 +10,12 @@ Date: 12/7/2019
 
 # std lib 
 import logging
+import os
 
 # third party
 from flask import Flask 
 import redis
+import boto3
 
 # local 
 from .routes import constellation
@@ -28,6 +30,10 @@ ROUTE_TABLE = {
 # Set up configuration data 
 class Config: 
     REDIS_DB = redis.Redis(host='redis', port=6379)
+    session = boto3.Session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                            aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    )
+    S3 = session.client('s3')
 
 def new_app(): 
     """ Creates a new flask app instance 

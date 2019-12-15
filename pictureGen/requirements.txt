@@ -10,8 +10,12 @@ watchdog
 tensorflow
 textgenrnn
 imageai
+
+# other stuff
 opencv-python
 pillow
 imutils
 requests
+awscli
+boto3
 

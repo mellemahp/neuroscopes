@@ -17,6 +17,7 @@ import numpy as np
 import cv2
 import imutils
 from PIL import Image
+import boto3
 
 # std lib
 from io import BytesIO
@@ -44,8 +45,8 @@ def constellation():
 
         #right ascension and declinaiton come from the birthday
         dayOfYear = datetime.datetime.strptime(bd, "%m-%d-%Y").timetuple().tm_yday
-        ra = dayOfYear/365*360
-        dec = (dayOfYear/365*180)-90
+        ra = (dayOfYear/365*100)+130
+        dec = (dayOfYear/365*50)+5
 
         rkey = "const_" + bd
         if not current_app.config["REDIS_DB"].exists(rkey):
@@ -95,7 +96,7 @@ def constellation():
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-                cv2.circle(img, (cX, cY), 5, (255, 255, 0), -1)
+                cv2.circle(img, (cX, cY), 3, (255, 0, 255), -1)
                 # For each star, add the center and the angle wrt x-axis of the ray pointing
                 # to the center
                 angle = np.arctan2(cY-centerPoint[1], cX-centerPoint[0])
@@ -107,9 +108,19 @@ def constellation():
             stars = stars[:,:-1].astype(np.int32)
 
             # Connect the dots
-            cv2.fillPoly(img, np.array([stars]), (255,0,0))
+            img_overlay = img.copy()
+            cv2.fillPoly(img_overlay, np.array([stars]), (255,255,255))
+            cv2.addWeighted(img_overlay, 0.2, img, 0.8, 0, img)
 
             cv2.imwrite(os.path.join(executionPath,'prediction_image.jpg'), img)
+
+            bucket_name = 'feauxstrology-images'
+            file_name = bd + '.jpg'
+            content = open(os.path.join(executionPath,'prediction_image.jpg'), 'rb')
+            s3 = current_app.config['S3']
+            response = s3.list_buckets()
+            print(response)
+            s3.upload_file('prediction_image.jpg', bucket_name, file_name)
 
             prediction = ImagePrediction()
             prediction.setModelTypeAsSqueezeNet()
@@ -119,7 +130,7 @@ def constellation():
             predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"prediction_image.jpg"), result_count=5)
             predictions = list(map(scrub_bytes, predictions))
 
-            imagePath = ""
+            imagePath = "https://feauxstrology-images.s3.us-east-2.amazonaws.com/" + bd + ".jpg"
             current_app.config["REDIS_DB"].hset(rkey, "imagePath", imagePath)
             current_app.config["REDIS_DB"].hset(rkey, "prediction1",predictions[0])
             current_app.config["REDIS_DB"].hset(rkey, "prediction2",predictions[1])

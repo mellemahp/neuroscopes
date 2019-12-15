@@ -32,7 +32,7 @@ services:
       - cache_network
     container_name: pictureGen
     entrypoint: > 
-      watchmedo auto-restart --recursive --directory='/app/' python3 /app/pictureGen.py
+      watchmedo auto-restart --recursive --directory='/app/' python3 pictureGen.py
 
   horoscope_gen: 
     build: ./horoscopeGen

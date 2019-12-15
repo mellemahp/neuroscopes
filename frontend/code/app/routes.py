@@ -15,6 +15,7 @@ from flask import render_template, request, redirect, url_for
 import requests
 import logging
 import re
+import time
 
 #=== End import ===# 
 
@@ -52,6 +53,7 @@ def display_page():
             return "Invalid birthday format", 400
         
         hs_res = requests.get('http://horoscopeGen:5000/', params={"bd":bd })
+        time.sleep(1)
         cons_res = requests.get('http://pictureGen:5000/', params={"bd":bd })
         hs_data = hs_res.json()['data']
         cons_data = cons_res.json()['data']
@@ -59,7 +61,7 @@ def display_page():
         return render_template("display.html", 
             hs=hs_data['horoscope'], 
             ln=hs_data['lucky_numbers'], 
-            image_url="https://cdn.britannica.com/04/186504-138-B79316BA/some-constellations-Orion-Cassiopeia-Big-Dipper.jpg",
+            image_url=cons_data['image_path'],
             coords=[cons_data['ra'],cons_data['dec']], 
             constellation=cons_data['prediction1']
             )
