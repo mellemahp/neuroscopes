@@ -34,7 +34,8 @@ def landing_page():
             bday_list = request.form['bday'].split("-")
             bd = "{}-{}-{}".format(bday_list[1], bday_list[2], bday_list[0])
     
-            return redirect(url_for('display_page', bd=bd)), 200
+            print(bd)
+            return redirect(url_for('display_page', bd=bd))
 
         except Exception as e: 
             l.error("Error with front end | {}".format(str(e)))
