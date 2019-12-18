@@ -34,7 +34,6 @@ def landing_page():
             bday_list = request.form['bday'].split("-")
             bd = "{}-{}-{}".format(bday_list[1], bday_list[2], bday_list[0])
     
-            print(bd)
             return redirect(url_for('display_page', bd=bd))
 
         except Exception as e: 
@@ -54,9 +53,9 @@ def display_page():
             return "Invalid birthday format", 400
         
         hs_res = requests.get('http://horoscopeGen:5000/', params={"bd":bd })
-        time.sleep(1)
-        cons_res = requests.get('http://pictureGen:5000/', params={"bd":bd })
         hs_data = hs_res.json()['data']
+
+        cons_res = requests.get('http://pictureGen:5000/', params={"bd":bd})
         cons_data = cons_res.json()['data']
 
         return render_template("display.html", 
@@ -64,10 +63,10 @@ def display_page():
             ln=hs_data['lucky_numbers'], 
             image_url=cons_data['image_path'],
             coords=[cons_data['ra'],cons_data['dec']], 
-            constellation=cons_data['prediction1']
+            constellation=cons_data['prediction']
             )
 
     except Exception as e:
         l.error("Error with front end | {}".format(str(e)))
 
-        return 500
+        return redirect(url_for('landing_page')), 500

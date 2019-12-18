@@ -26,9 +26,12 @@ import datetime
 import time
 import re
 import os
+import warnings
 from random import randint
 
 #=== End imports ===# 
+
+warnings.filterwarnings("ignore")
 
 l = logging.getLogger(__name__)
 
@@ -39,7 +42,7 @@ def scrub_bytes(prediction):
 
 def constellation():
     try:
-        executionPath = os.getcwd()
+        executionPath = os.path.abspath("/tmp")
 
         bd = request.args.get("bd")
 
@@ -119,52 +122,35 @@ def constellation():
             content = open(os.path.join(executionPath,'prediction_image.jpg'), 'rb')
             s3 = current_app.config['S3']
             response = s3.list_buckets()
-            print(response)
-            s3.upload_file('prediction_image.jpg', bucket_name, file_name)
+            s3.upload_file('/tmp/prediction_image.jpg', bucket_name, file_name)
 
             prediction = ImagePrediction()
             prediction.setModelTypeAsSqueezeNet()
-            prediction.setModelPath(os.path.join(executionPath,
-                "squeezenet_weights_tf_dim_ordering_tf_kernels.h5"))
+            prediction.setModelPath("squeezenet_weights_tf_dim_ordering_tf_kernels.h5")
             prediction.loadModel("fastest")
-            predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"prediction_image.jpg"), result_count=5)
+            predictions, probabilities = prediction.predictImage(os.path.join(executionPath,"prediction_image.jpg"), result_count=2)
             predictions = list(map(scrub_bytes, predictions))
 
             imagePath = "https://feauxstrology-images.s3.us-east-2.amazonaws.com/" + bd + ".jpg"
             current_app.config["REDIS_DB"].hset(rkey, "imagePath", imagePath)
-            current_app.config["REDIS_DB"].hset(rkey, "prediction1",predictions[0])
-            current_app.config["REDIS_DB"].hset(rkey, "prediction2",predictions[1])
-            current_app.config["REDIS_DB"].hset(rkey, "prediction3",predictions[2])
-            current_app.config["REDIS_DB"].hset(rkey, "prediction4",predictions[3])
-            current_app.config["REDIS_DB"].hset(rkey, "prediction5",predictions[4])
+            current_app.config["REDIS_DB"].hset(rkey,"prediction",scrub_bytes(predictions[0]))
         else: 
             imagePath = current_app.config["REDIS_DB"].hget(rkey, "imagePath").decode('utf-8')
             predictions = [
-                    current_app.config["REDIS_DB"].hget(rkey, "prediction1"),
-                    current_app.config["REDIS_DB"].hget(rkey, "prediction2"),
-                    current_app.config["REDIS_DB"].hget(rkey, "prediction3"),
-                    current_app.config["REDIS_DB"].hget(rkey, "prediction4"),
-                    current_app.config["REDIS_DB"].hget(rkey, "prediction5")]
+                    current_app.config["REDIS_DB"].hget(rkey, "prediction")]
 
-        print(predictions[0])
-        print(type(predictions[0]))
-        print(type("digital_clock"))
+
+        constellation = scrub_bytes(predictions[0])
         data = {
             "metadata": { 
                 "gen_at": time.strftime("%d %m, %H:%M:%S"),
                 "input_bd": bd
-            }, 
+            },
             "ra": ra,
             "dec": dec,
-            "image_path": imagePath, 
-            "prediction1": scrub_bytes(predictions[0]),
-            "prediction2": scrub_bytes(predictions[1]),
-            "prediction3": scrub_bytes(predictions[2]),
-            "prediction4": scrub_bytes(predictions[3]),
-            "prediction5": scrub_bytes(predictions[4])
+            "image_path": imagePath,
+            "prediction": constellation
         }
-
-        l.info("successfully generated constellation")
 
         return jsonify(data=data), 200
     except Exception as e: 
