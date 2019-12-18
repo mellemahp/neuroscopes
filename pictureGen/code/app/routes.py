@@ -60,8 +60,8 @@ def constellation():
             height_deg = 0.25
 
             #pixels along width and height of image
-            width = 400
-            height = width
+            width = 1920
+            height = 1080
 
             #scale is arcseconds per pixel
             scale = width_deg * 3600 / width

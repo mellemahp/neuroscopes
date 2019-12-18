@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1> Feauxstrology </h1>
-<h2> Your source for the highest quality fortunes and horoscopes </h2>
-<form action="/" method="POST">
-    Birthday:
-    <input type="date" name="bday">
-    <input type="submit">
-</form>  
+<div class="landing">
+  <div class="titles">
+    <h1 id="title"> Feauxstrology </h1>
+    <h3 id="subtitle"> Your source for the highest quality fortunes and horoscopes </h3>
+  </div>
+  <div class="landing_form_div">
+    <div class="landing_form">
+      <form action="/" method="POST">
+        <p> Birthday:</p>
+        <input id="landing_date" type="date" name="bday">
+        <input class="submit_button" type="submit">
+      </form>  
+    </div>
+  </div>
+  <div id="blank_space"></div>
+</div>
 {% endblock %}

@@ -3,15 +3,31 @@
 {% block body %}
 
 <center>
-    <img src="{{ image_url }}" width="500" height="auto" />
-    <h2> Your constellation </h2> 
-    <p> {{ constellation }} </p>
-    <h2> </h2>
-    <p> RA: {{ coords[0] }}   DEC: {{ coords[1] }} </p>
-    <h2> Your Future </h2>
-    <p> {{ hs }} </p>
-    <h2> Your Lucky Numbers </h2>
-    <p> {% for i in ln %} <span> {{ i }} </span> {% endfor %} </p> 
+    <img id="constellation" src="{{ image_url }}"/>
+    <div id="empty_constellation"></div>
 </center> 
+<div id="horoscope">
+  <h1> Your Horoscope: </h1>
+  <div class="info_block">
+    <div class="constellation_header"> Your constellation: </div> 
+    <div class="constellation_info"> {{ constellation }} </div>
+  </div>
+  <div class="info_block">
+    <div class="constellation_header"> Right Ascension: </div> 
+    <div class="constellation_info">{{ coords[0] }}</div>
+  </div>
+  <div class="info_block">
+    <div class="constellation_header"> Declination: </div> 
+    <div class="constellation_info">{{ coords[1] }}</div>
+  </div>
+  <div class="info_block">
+    <div class="constellation_header"> Your Future: </div>
+    <div class="constellation_info"> {{ hs }} </div>
+  </div>
+  <div class="info_block">
+    <div class="constellation_header"> Your Lucky Numbers: </div>
+    <div class="constellation_info"> {% for i in ln %} <sdivan> {{ i }} </sdivan> {% endfor %} </div> 
+  </div>
+</div>
 
 {% endblock %}
