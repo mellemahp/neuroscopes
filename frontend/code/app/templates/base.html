@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
     <link rel="stylesheet" href="{{url_for('static',filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Cabin|Quicksand|Rubik&display=swap" rel="stylesheet">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111198634-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-111198634-2');
+    </script>
 	{% block styles %}{% endblock %}
 </head>
 <body>
